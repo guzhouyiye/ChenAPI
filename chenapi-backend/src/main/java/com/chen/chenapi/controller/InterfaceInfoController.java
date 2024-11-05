@@ -10,11 +10,13 @@ import com.chen.chenapi.model.entity.InterfaceInfo;
 import com.chen.chenapi.model.entity.User;
 import com.chen.chenapi.model.enums.InterfaceInfoStatusEnum;
 import com.chen.chenapi.model.interfaceInfo.InterfaceInfoAddRequest;
+import com.chen.chenapi.model.interfaceInfo.InterfaceInfoInvokeRequest;
 import com.chen.chenapi.model.interfaceInfo.InterfaceInfoQueryRequest;
 import com.chen.chenapi.model.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.chen.chenapi.service.InterfaceInfoService;
 import com.chen.chenapi.service.UserService;
 import com.chen.chenapiclientsdk.client.ChenApiClient;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -257,5 +259,39 @@ public class InterfaceInfoController {
         interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
         boolean result = interfaceInfoService.updateById(interfaceInfo);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 测试调用
+     *
+     * @param interfaceInfoInvokeRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
+                                                      HttpServletRequest request) {
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long id = interfaceInfoInvokeRequest.getId();
+        String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if (oldInterfaceInfo.getStatus() == InterfaceInfoStatusEnum.OFFLINE.getValue()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
+        }
+        User loginUser = userService.getLoginUser(request);
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+        ChenApiClient tempClient = new ChenApiClient(accessKey, secretKey);
+        Gson gson = new Gson();
+        // 将 JSON 字符串转换为 User 对象
+        com.chen.chenapiclientsdk.model.User user = gson.fromJson(userRequestParams, com.chen.chenapiclientsdk.model.User.class);
+        String userNameByPost = tempClient.getUsernameByPost(user);
+        return ResultUtils.success(userNameByPost);
     }
 }

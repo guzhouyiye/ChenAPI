@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 创建请求
+ * 接口调用请求
  *
  * @TableName product
  */
