@@ -3,19 +3,18 @@ package com.chen.chenapi.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chen.chenapi.annotation.AuthCheck;
-import com.chen.chenapi.common.BaseResponse;
-import com.chen.chenapi.common.DeleteRequest;
-import com.chen.chenapi.common.ErrorCode;
-import com.chen.chenapi.common.ResultUtils;
+import com.chen.chenapi.common.*;
 import com.chen.chenapi.constant.CommonConstant;
 import com.chen.chenapi.exception.BusinessException;
 import com.chen.chenapi.model.entity.InterfaceInfo;
 import com.chen.chenapi.model.entity.User;
+import com.chen.chenapi.model.enums.InterfaceInfoStatusEnum;
 import com.chen.chenapi.model.interfaceInfo.InterfaceInfoAddRequest;
 import com.chen.chenapi.model.interfaceInfo.InterfaceInfoQueryRequest;
 import com.chen.chenapi.model.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.chen.chenapi.service.InterfaceInfoService;
 import com.chen.chenapi.service.UserService;
+import com.chen.chenapiclientsdk.client.ChenApiClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -26,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * 帖子接口
+ * 接口管理
  */
 @RestController
 @RequestMapping("/interfaceInfo")
@@ -38,6 +37,9 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private ChenApiClient chenApiClient;
 
     // region 增删改查
 
@@ -192,6 +194,68 @@ public class InterfaceInfoController {
         return ResultUtils.success(interfaceInfoPage);
     }
 
-    // endregion
+    /**
+     * 发布
+     *
+     * @param idRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/online")
+    @AuthCheck(mustRole = "admin")
+    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                     HttpServletRequest request) {
 
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long id = idRequest.getId();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        // 判断该接口是否可以调用
+        com.chen.chenapiclientsdk.model.User user = new com.chen.chenapiclientsdk.model.User();
+        user.setUsername("test");
+        String username = chenApiClient.getUsernameByPost(user);
+        if (StringUtils.isBlank(username)) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口验证失败");
+
+        }
+        // 仅本人或管理员可修改
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 更新
+     *
+     * @param idRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/offline")
+    @AuthCheck(mustRole = "admin")
+    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                     HttpServletRequest request) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long id = idRequest.getId();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        // 仅本人或管理员可修改
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
 }
