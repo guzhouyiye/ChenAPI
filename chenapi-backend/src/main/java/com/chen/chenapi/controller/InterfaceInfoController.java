@@ -9,10 +9,10 @@ import com.chen.chenapi.exception.BusinessException;
 import com.chen.chenapi.model.entity.InterfaceInfo;
 import com.chen.chenapi.model.entity.User;
 import com.chen.chenapi.model.enums.InterfaceInfoStatusEnum;
-import com.chen.chenapi.model.interfaceInfo.InterfaceInfoAddRequest;
-import com.chen.chenapi.model.interfaceInfo.InterfaceInfoInvokeRequest;
-import com.chen.chenapi.model.interfaceInfo.InterfaceInfoQueryRequest;
-import com.chen.chenapi.model.interfaceInfo.InterfaceInfoUpdateRequest;
+import com.chen.chenapi.model.dto.interfaceInfo.InterfaceInfoAddRequest;
+import com.chen.chenapi.model.dto.interfaceInfo.InterfaceInfoInvokeRequest;
+import com.chen.chenapi.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
+import com.chen.chenapi.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.chen.chenapi.service.InterfaceInfoService;
 import com.chen.chenapi.service.UserService;
 import com.chen.chenapiclientsdk.client.ChenApiClient;
@@ -234,7 +234,7 @@ public class InterfaceInfoController {
     }
 
     /**
-     * 更新
+     * 下线
      *
      * @param idRequest
      * @param request

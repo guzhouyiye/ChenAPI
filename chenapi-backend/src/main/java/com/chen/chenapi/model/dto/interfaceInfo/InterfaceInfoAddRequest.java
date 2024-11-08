@@ -1,25 +1,19 @@
-package com.chen.chenapi.model.interfaceInfo;
+package com.chen.chenapi.model.dto.interfaceInfo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 更新请求
+ * 创建请求
  *
  * @TableName product
  */
 @Data
-public class InterfaceInfoUpdateRequest implements Serializable {
+public class InterfaceInfoAddRequest implements Serializable {
 
-    /**
-     * 主键
-     */
-    private Long id;
 
     /**
      * 名称
@@ -52,12 +46,15 @@ public class InterfaceInfoUpdateRequest implements Serializable {
     private String responseHeader;
 
     /**
-     * 接口状态（0-关闭，1-开启）
-     */
-    private Integer status;
-
-    /**
      * 请求类型
      */
     private String method;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
 }

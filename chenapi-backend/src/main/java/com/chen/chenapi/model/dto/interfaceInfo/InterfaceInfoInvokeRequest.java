@@ -1,4 +1,4 @@
-package com.chen.chenapi.model.interfaceInfo;
+package com.chen.chenapi.model.dto.interfaceInfo;
 
 import lombok.Data;
 

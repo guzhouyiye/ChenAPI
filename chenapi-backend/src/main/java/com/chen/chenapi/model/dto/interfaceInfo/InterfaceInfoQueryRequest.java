@@ -1,19 +1,22 @@
-package com.chen.chenapi.model.interfaceInfo;
+package com.chen.chenapi.model.dto.interfaceInfo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.chen.chenapi.common.PageRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * 接口调用请求
- *
- * @TableName product
+ * 查询请求
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class InterfaceInfoAddRequest implements Serializable {
+public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
 
+    /**
+     * 主键
+     */
+    private Long id;
 
     /**
      * 名称
@@ -31,11 +34,6 @@ public class InterfaceInfoAddRequest implements Serializable {
     private String url;
 
     /**
-     * 请求参数
-     */
-    private String requestParams;
-
-    /**
      * 请求头
      */
     private String requestHeader;
@@ -46,15 +44,17 @@ public class InterfaceInfoAddRequest implements Serializable {
     private String responseHeader;
 
     /**
+     * 接口状态（0-关闭，1-开启）
+     */
+    private Integer status;
+
+    /**
      * 请求类型
      */
     private String method;
 
     /**
-     * 创建时间
+     * 创建人
      */
-    private Date createTime;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private Long userId;
 }

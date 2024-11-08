@@ -1,17 +1,20 @@
-package com.chen.chenapi.model.interfaceInfo;
+package com.chen.chenapi.model.dto.interfaceInfo;
 
-import com.chen.chenapi.common.PageRequest;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
- * 查询请求
+ * 更新请求
+ *
+ * @TableName product
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
+public class InterfaceInfoUpdateRequest implements Serializable {
 
     /**
      * 主键
@@ -34,6 +37,11 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
     private String url;
 
     /**
+     * 请求参数
+     */
+    private String requestParams;
+
+    /**
      * 请求头
      */
     private String requestHeader;
@@ -52,9 +60,4 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
      * 请求类型
      */
     private String method;
-
-    /**
-     * 创建人
-     */
-    private Long userId;
 }
